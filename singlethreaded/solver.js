@@ -20,10 +20,13 @@ function findLongestSequence(puzzles) {
 
     let resultString = "";
     if (bestPath.length > 0) {
-        const fullPuzzlesArray = bestPath.map(id => puzzles[id]);
-        resultString = fullPuzzlesArray.join(" ");
-    }
+        resultString = puzzles[bestPath[0]];
 
+        for (let i = 1; i < bestPath.length; i++) {
+            const nextPuzzle = puzzles[bestPath[i]];
+            resultString += nextPuzzle.slice(2);
+        }
+    }
     return { maxLen, resultString };
 }
 

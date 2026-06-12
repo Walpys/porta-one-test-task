@@ -15,7 +15,7 @@ function runWorker(puzzles, starters) {
         let localResult = { maxLen: 0, bestPath: [] };
 
         worker.on('message', (msg) => {
-            localResult = msg; 
+            localResult = msg;
         });
 
         worker.on('error', (err) => {
@@ -23,7 +23,7 @@ function runWorker(puzzles, starters) {
         });
 
         worker.on('exit', () => {
-            resolve(localResult); 
+            resolve(localResult);
         });
     });
 }
@@ -65,8 +65,12 @@ async function findLongestSequenceMultithreaded(puzzles) {
 
     let resultString = "";
     if (globalBestPath.length > 0) {
-        const fullPuzzlesArray = globalBestPath.map(id => puzzles[id]);
-        resultString = fullPuzzlesArray.join(" ");
+        resultString = puzzles[globalBestPath[0]];
+
+        for (let i = 1; i < globalBestPath.length; i++) {
+            const nextPuzzle = puzzles[globalBestPath[i]];
+            resultString += nextPuzzle.slice(2);
+        }
     }
 
     return { maxLen: globalMaxLen, resultString };
