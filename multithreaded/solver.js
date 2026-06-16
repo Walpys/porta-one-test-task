@@ -2,14 +2,14 @@ const path = require('path');
 const os = require('os');
 const { Worker } = require('worker_threads');
 
-function runWorker(puzzles, starters) {
+function runWorker(indexedPuzzles, starters) {
     return new Promise((resolve) => {
         if (!starters || starters.length === 0) {
             return resolve({ maxLen: 0, bestPath: [] });
         }
 
         const worker = new Worker(path.join(__dirname, 'worker.js'), {
-            workerData: { puzzles, starters }
+            workerData: { indexedPuzzles, starters }
         });
 
         let localResult = { maxLen: 0, bestPath: [] };
@@ -28,18 +28,19 @@ function runWorker(puzzles, starters) {
     });
 }
 
-
 async function findLongestSequenceMultithreaded(puzzles) {
     const indexedPuzzles = puzzles.map((str, index) => ({
         id: index,
         start: +str.slice(0, 2),
         end: +str.slice(-2)
     }));
+
     const endsSet = new Set(indexedPuzzles.map(p => p.end));
     let startingCandidates = indexedPuzzles.filter(p => !endsSet.has(p.start)).map(p => p.id);
     if (startingCandidates.length === 0) {
         startingCandidates = indexedPuzzles.map(p => p.id);
     }
+    
     console.log(`Unique entry points found: ${startingCandidates.length}`);
     const cpusCount = os.cpus().length;
     const threadCount = cpusCount > 4 ? Math.floor(cpusCount / 2) : cpusCount;
@@ -50,7 +51,7 @@ async function findLongestSequenceMultithreaded(puzzles) {
         chunks[index % threadCount].push(starterId);
     });
 
-    const workerPromises = chunks.map(chunk => runWorker(puzzles, chunk));
+    const workerPromises = chunks.map(chunk => runWorker(indexedPuzzles, chunk));
     const results = await Promise.all(workerPromises);
 
     let globalMaxLen = 0;

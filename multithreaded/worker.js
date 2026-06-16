@@ -1,8 +1,8 @@
 const { parentPort, workerData } = require('worker_threads');
 const { findLongestSequenceCore } = require('../core');
 
-const { puzzles, starters } = workerData;
+const { indexedPuzzles, starters } = workerData;
 
-const result = findLongestSequenceCore(puzzles, starters);
+const result = findLongestSequenceCore(indexedPuzzles, starters);
 
 parentPort.postMessage(result);
