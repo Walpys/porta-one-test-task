@@ -16,7 +16,7 @@ function findLongestSequence(puzzles) {
 
     console.log(`Unique entry points found: ${startingCandidates.length}`);
 
-    const { maxLen, bestPath } = findLongestSequenceCore(puzzles, startingCandidates);
+    const { maxLen, bestPath } = findLongestSequenceCore(indexedPuzzles, startingCandidates);
 
     let resultString = "";
     if (bestPath.length > 0) {

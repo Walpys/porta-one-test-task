@@ -1,22 +1,17 @@
 function findLongestSequenceCore(puzzles, starters) {
-    const indexedPuzzles = puzzles.map((str, index) => ({
-        id: index,
-        str: str,
-        start: +str.slice(0, 2),
-        end: +str.slice(-2)
-    }));
 
     const graph = Array.from({ length: 100 }, () => []);
-    for (let i = 0; i < indexedPuzzles.length; i++) {
-        const p = indexedPuzzles[i];
+
+    for (let i = 0; i < puzzles.length; i++) {
+        const p = puzzles[i]; 
         graph[p.start].push(p.id);
     }
 
     let maxLen = 0;
     let bestPath = [];
-    
+
     const currentPathIds = [];
-    const used = new Uint8Array(indexedPuzzles.length);
+    const used = new Uint8Array(puzzles.length);
 
     function dfs(currentTwoDigits) {
         if (currentPathIds.length > maxLen) {
@@ -30,10 +25,10 @@ function findLongestSequenceCore(puzzles, starters) {
 
         for (let i = 0; i < len; i++) {
             const nextId = candidates[i];
-            
+
             if (used[nextId] === 1) continue;
 
-            const nextPuzzle = indexedPuzzles[nextId];
+            const nextPuzzle = puzzles[nextId];
 
             used[nextId] = 1;
             currentPathIds.push(nextId);
@@ -46,14 +41,14 @@ function findLongestSequenceCore(puzzles, starters) {
     }
 
     for (let i = 0; i < starters.length; i++) {
-        const firstPuzzle = indexedPuzzles[starters[i]];
+        const firstPuzzle = puzzles[starters[i]];
         if (!firstPuzzle) continue;
-        
+
         used[firstPuzzle.id] = 1;
         currentPathIds.push(firstPuzzle.id);
-        
+
         dfs(firstPuzzle.end);
-        
+
         currentPathIds.pop();
         used[firstPuzzle.id] = 0;
     }
